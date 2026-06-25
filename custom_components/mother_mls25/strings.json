@@ -1,0 +1,25 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Add Mother PoE driver",
+        "description": "Enter the IP address of your Mother PoE driver. You can find it in your router, or with the discovery script in the project's poc/ folder.",
+        "data": {
+          "host": "IP address"
+        }
+      },
+      "discovery_confirm": {
+        "title": "Add Mother PoE driver",
+        "description": "Do you want to add the Mother PoE driver {name} to Home Assistant?"
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the driver."
+    },
+    "abort": {
+      "already_configured": "This driver is already configured.",
+      "cannot_connect": "Failed to connect to the driver."
+    }
+  }
+}

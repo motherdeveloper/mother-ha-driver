@@ -1,0 +1,4 @@
+# PoC CoAP test client for the Mother MLS25 driver.
+aiocoap>=0.4.7
+cbor2>=5.4.0
+zeroconf>=0.131.0

@@ -1,0 +1,15 @@
+{
+  "domain": "mother_mls25",
+  "name": "Mother PoE driver",
+  "version": "0.4.0",
+  "documentation": "https://github.com/motherdeveloper/mother-ha-driver",
+  "issue_tracker": "https://github.com/motherdeveloper/mother-ha-driver/issues",
+  "codeowners": ["@motherdeveloper"],
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": ["aiocoap>=0.4.7", "cbor2>=5.4.0"],
+  "dependencies": ["http"],
+  "dhcp": [{ "hostname": "mls25-*" }],
+  "zeroconf": ["_mother-life._udp.local."]
+}

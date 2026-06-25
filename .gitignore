@@ -1,0 +1,17 @@
+# Proprietary driver firmware — never publish to the public repo
+mother-mls25-zephyr-app-master/
+
+# Python
+__pycache__/
+*.py[cod]
+poc/.venv/
+.venv/
+venv/
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# macOS
+.DS_Store
+._*

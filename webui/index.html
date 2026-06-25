@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLS25 bediening</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --card-2: #222630;
+    --text: #e9edf2;
+    --muted: #9aa3b2;
+    --accent: #4c7dff;
+    --on: #ffb65c;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 48px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  header { max-width: 640px; margin: 0 auto 20px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .sub b { color: var(--text); font-weight: 600; }
+  .grid { max-width: 640px; margin: 0 auto; display: grid; gap: 16px; }
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 20px; border: 1px solid #2a2f3a;
+  }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .name { font-size: 16px; font-weight: 600; }
+  .live { font-size: 13px; color: var(--muted); }
+  .live b { color: var(--on); font-weight: 600; }
+  .toggle {
+    border: none; cursor: pointer; border-radius: 999px;
+    padding: 8px 18px; font-size: 14px; font-weight: 600;
+    background: var(--card-2); color: var(--muted); transition: .15s;
+  }
+  .toggle.on { background: var(--on); color: #2a1a00; }
+  .row { display: flex; align-items: center; gap: 14px; }
+  .pct { width: 52px; text-align: right; font-variant-numeric: tabular-nums; font-size: 15px; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 14px;
+    border-radius: 999px; outline: none; cursor: pointer;
+    background: linear-gradient(90deg, #ff9a3c 0%, #ffd9a0 35%, #eaf3ff 70%, #cfe2ff 100%);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 26px; height: 26px;
+    border-radius: 50%; background: #fff; border: 2px solid #c9d3e3;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  }
+  .hint { margin: 14px 2px 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .err { max-width: 640px; margin: 0 auto 16px; padding: 12px 14px; border-radius: 12px;
+         background: #3a1d1d; color: #ffb4b4; font-size: 13px; display: none; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Mother MLS25 — bediening</h1>
+    <div class="sub">Driver: <b id="host">…</b></div>
+  </header>
+
+  <div class="err" id="err"></div>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const NUM = 2;
+    const RATE = 20;            // fade-snelheid die we meesturen
+    let dragging = -1;          // kanaal dat nu versleept wordt (geen poll-overschrijving)
+
+    function card(ch) {
+      return `
+      <div class="card" data-ch="${ch}">
+        <div class="card-top">
+          <div class="name">Kanaal ${ch}</div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <span class="live">huidig: <b data-live>–</b></span>
+            <button class="toggle" data-toggle>Uit</button>
+          </div>
+        </div>
+        <div class="row">
+          <input type="range" min="0" max="100" value="0" data-slider>
+          <div class="pct"><span data-pct>0</span>%</div>
+        </div>
+      </div>`;
+    }
+
+    const grid = document.getElementById('grid');
+    grid.innerHTML = Array.from({length: NUM}, (_, i) => card(i)).join('');
+
+    function showErr(msg) {
+      const e = document.getElementById('err');
+      e.textContent = msg; e.style.display = msg ? 'block' : 'none';
+    }
+
+    // Served from the bridge (localhost:8080) → relative; opened elsewhere
+    // (preview panel, file://) → talk to the bridge directly.
+    const API_BASE = (location.protocol.startsWith('http') && location.port === '8080')
+      ? '' : 'http://localhost:8080';
+
+    async function api(path, body) {
+      const r = await fetch(API_BASE + path, body ? {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      } : {});
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || r.statusText);
+      return data;
+    }
+
+    function setUI(ch, level) {
+      const c = grid.querySelector(`.card[data-ch="${ch}"]`);
+      c.querySelector('[data-live]').textContent = level + '%';
+      const tg = c.querySelector('[data-toggle]');
+      const on = level > 0;
+      tg.classList.toggle('on', on);
+      tg.textContent = on ? 'Aan' : 'Uit';
+    }
+
+    function setSlider(ch, level) {
+      const c = grid.querySelector(`.card[data-ch="${ch}"]`);
+      c.querySelector('[data-slider]').value = level;
+      c.querySelector('[data-pct]').textContent = level;
+    }
+
+    // Slider events
+    grid.querySelectorAll('.card').forEach(c => {
+      const ch = +c.dataset.ch;
+      const slider = c.querySelector('[data-slider]');
+      const pct = c.querySelector('[data-pct]');
+      slider.addEventListener('input', () => { dragging = ch; pct.textContent = slider.value; });
+      slider.addEventListener('change', async () => {
+        try { await api('/api/set', {ch, level: +slider.value, rate: RATE}); showErr(''); }
+        catch (e) { showErr('Fout bij instellen: ' + e.message); }
+        finally { dragging = -1; }
+      });
+      c.querySelector('[data-toggle]').addEventListener('click', async () => {
+        const on = !c.querySelector('[data-toggle]').classList.contains('on');
+        try {
+          await api('/api/onoff', {ch, on});
+          setSlider(ch, on ? 100 : 0);
+          showErr('');
+        } catch (e) { showErr('Fout bij schakelen: ' + e.message); }
+      });
+    });
+
+    async function poll() {
+      try {
+        const s = await api('/api/status');
+        document.getElementById('host').textContent = s.host;
+        for (const {ch, level} of s.channels) {
+          setUI(ch, level);
+          if (ch !== dragging) setSlider(ch, level);   // niet overschrijven tijdens slepen
+        }
+        showErr('');
+      } catch (e) {
+        showErr('Geen verbinding met de driver: ' + e.message);
+      }
+    }
+
+    poll();
+    setInterval(poll, 2500);
+  </script>
+
+  <p class="hint" style="max-width:640px;margin:24px auto 0">
+    Tip: de spots verschuiven automatisch van warm (laag gedimd) naar daglicht (~4000K bij 100%) —
+    de kleur volgt dus de helderheid, daarom is er enkel een dimmer en geen aparte kleurinstelling.
+  </p>
+</body>
+</html>
