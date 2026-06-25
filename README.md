@@ -1,9 +1,10 @@
 # Mother PoE driver — Home Assistant integration
 
 Control the **Mother PoE driver** from Home Assistant: drivers are discovered on
-the local network, added with a click, and exposed as dimmable lights. The same
-Home Assistant box also bridges the driver to **Loxone** and **KNX**, so one
-integration serves every system.
+the local network, added with a click, and exposed as dimmable lights. Your Home
+Assistant server also bridges the driver to **Loxone** and **KNX**, so one
+integration serves every system. All the instructions are in this README and in
+the [knowledge base page](https://motherdeveloper.github.io/mother-ha-driver/).
 
 ## Features
 
@@ -51,9 +52,8 @@ speak the driver's protocol directly:
 - **KNX** — Home Assistant's built-in KNX integration links the lights to KNX
   group addresses, no extra code. See [docs/knx.md](docs/knx.md).
 
-A full quick-start for installers and users is in
-[the knowledge base](MotherPoEDriver-KnowledgeBase.html) (open in a browser, or
-host it with GitHub Pages).
+A full quick-start for installers and users is in the
+[knowledge base](https://motherdeveloper.github.io/mother-ha-driver/).
 
 ## How it works
 
