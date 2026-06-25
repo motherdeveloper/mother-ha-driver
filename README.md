@@ -21,9 +21,11 @@ the [knowledge base page](https://motherdeveloper.github.io/mother-ha-driver/).
 
 ### Via HACS (recommended)
 
-1. In HACS → ⋮ → **Custom repositories**, add this repository's URL, category
+1. In Home Assistant, install Home Assistant Community Store. Find the link to
+   HACS install [here](https://www.hacs.xyz/docs/use/download/download/).
+2. In HACS → ⋮ → **Custom repositories**, add this repository's URL, category
    **Integration**.
-2. Search for **Mother PoE driver**, download it, and restart Home Assistant.
+3. Search for **Mother PoE driver**, download it, and restart Home Assistant.
 
 ### Manual
 
