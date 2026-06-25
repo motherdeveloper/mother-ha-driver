@@ -90,4 +90,8 @@ python test_coap.py <ip> --demo       # visible fade sequence
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Source-available under the [PolyForm Perimeter License 1.0.1](LICENSE): free to
+use, modify and distribute, but **not** to build a product that competes with it
+or to resell the software. This is not an OSI open-source license, so the
+integration is distributed via a custom HACS repository (not the HACS default
+store).
