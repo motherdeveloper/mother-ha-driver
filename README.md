@@ -13,6 +13,7 @@ the [knowledge base page](https://motherdeveloper.github.io/mother-ha-driver/).
 - **Local & private** — talks directly to the driver over the LAN, no cloud.
 - **Loxone bridge** — plain-text HTTP endpoints for the Miniserver.
 - **KNX bridge** — drive the lights from KNX push-buttons via Home Assistant.
+- **Apple Home & Siri** — expose the lights via Home Assistant's HomeKit Bridge.
 
 > The Mother spots shift colour automatically with the level — warm when dimmed,
 > ~4000 K daylight at full — so there is only a brightness control, by design.
@@ -43,11 +44,12 @@ Copy `custom_components/mother_mls25/` into your Home Assistant
 
 Each driver becomes a device with two lights, **Channel 0** and **Channel 1**.
 
-## Loxone & KNX
+## Other ecosystems
 
-The Home-Assistant box doubles as a universal local hub for systems that cannot
-speak the driver's protocol directly:
+The Home-Assistant box doubles as a universal local hub:
 
+- **Apple Home** — Home Assistant's built-in HomeKit Bridge exposes the lights
+  to Apple Home and Siri, fully local. See [docs/apple-home.md](docs/apple-home.md).
 - **Loxone** — the integration exposes plain-text HTTP endpoints
   (`/api/mls25/…`) that the Miniserver drives via Virtual Outputs/Inputs.
   See [docs/loxone.md](docs/loxone.md).

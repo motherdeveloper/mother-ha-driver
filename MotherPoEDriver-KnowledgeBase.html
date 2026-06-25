@@ -107,6 +107,7 @@
       <a class="nav-link" data-p="p-ha">Home Assistant</a>
       <a class="nav-link" data-p="p-loxone">Loxone</a>
       <a class="nav-link" data-p="p-knx">KNX</a>
+      <a class="nav-link" data-p="p-apple">Apple Home</a>
     </div>
     <div class="nav-group">
       <div class="nav-group-label">Reference</div>
@@ -133,6 +134,7 @@
     <a class="card" data-p="p-ha"><div class="card-t">Home Assistant setup</div><div class="card-d">Install, auto-discover the driver, control two dimmable lights.</div></a>
     <a class="card" data-p="p-loxone"><div class="card-t">Loxone setup</div><div class="card-d">Virtual Outputs/Inputs against the HA bridge — step by step.</div></a>
     <a class="card" data-p="p-knx"><div class="card-t">KNX setup</div><div class="card-d">Drive the lights from KNX push-buttons via Home Assistant.</div></a>
+    <a class="card" data-p="p-apple"><div class="card-t">Apple Home</div><div class="card-d">Expose the lights to Apple Home &amp; Siri via Home Assistant — fully local.</div></a>
     <a class="card" data-p="p-reference"><div class="card-t">API endpoints</div><div class="card-d">The HTTP and CoAP endpoints, for reference.</div></a>
     <a class="card" data-p="p-trouble"><div class="card-t">Troubleshooting</div><div class="card-d">Common issues and how to resolve them, in one table.</div></a>
   </div>
@@ -379,6 +381,33 @@ template:
   <div class="note">
     <h3>Adapt to your installation</h3>
     <p>Replace the entity IDs and group addresses with your own. The <code>knx_event</code> payload field can vary by HA version — verify it live under <em>Developer Tools → Events → listen to <code>knx_event</code></em> and adjust the templates. See <code>docs/knx.md</code> in the repo for the full recipe.</p>
+  </div>
+</div>
+
+<!-- APPLE HOME -->
+<div class="panel" id="p-apple">
+  <h1 class="page-title">Apple Home setup</h1>
+  <p class="page-sub">Expose the lights to Apple Home with Home Assistant's built-in HomeKit Bridge — fully local, with Siri. No extra code.</p>
+
+  <div class="note warn-box">
+    <h3>&#9888; You need</h3>
+    <p>Home Assistant on the same LAN as your iPhone/iPad and the driver, with the driver added. If HA runs in Docker, the container needs <b>host networking</b> — HomeKit is discovered over mDNS/Bonjour and does not cross NAT. On Home Assistant OS / a Raspberry Pi it works out of the box.</p>
+  </div>
+
+  <h2>Steps</h2>
+  <ol>
+    <li><em>Settings → Devices &amp; Services → Add integration → <b>HomeKit Bridge</b></em>.</li>
+    <li>Choose what to expose — the <b>Light</b> domain, or just the driver's <code>Channel 0</code> / <code>Channel 1</code> entities.</li>
+    <li>Submit. Home Assistant shows a <b>pairing code</b> (also in a notification).</li>
+    <li>On your iPhone: <em>Home app → + → Add Accessory → More options…</em> → pick the Home Assistant bridge → enter the pairing code.</li>
+    <li>The channels appear as <b>dimmable lightbulbs</b> — on/off, brightness, scenes, and “Hey Siri…”.</li>
+  </ol>
+
+  <div class="note tip">
+    <h3>Good to know</h3>
+    <p><b>Local only</b> — HomeKit runs over your LAN; nothing via the cloud, no subscription.</p>
+    <p><b>Not appearing?</b> The iPhone can't reach HA over mDNS — usually HA behind NAT (Docker without host networking, or a separate VLAN). Put HA on the same LAN or enable host networking.</p>
+    <p>One bridge can expose many entities — you don't need one per driver.</p>
   </div>
 </div>
 
